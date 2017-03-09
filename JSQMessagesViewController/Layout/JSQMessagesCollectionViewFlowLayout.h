@@ -24,6 +24,7 @@
 #import <UIKit/UIKit.h>
 
 #import "JSQMessagesBubbleSizeCalculating.h"
+#import "JSQMessagesCollectionViewLayoutAttributes.h"
 
 @class JSQMessagesCollectionView;
 
@@ -209,5 +210,9 @@ FOUNDATION_EXPORT const CGFloat kJSQMessagesCollectionViewAvatarSizeDefault;
  *  @return The size of the item displayed at indexPath.
  */
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath;
+
+// Protected methods
+
+- (void)jsq_configureMessageCellLayoutAttributes:(JSQMessagesCollectionViewLayoutAttributes *)layoutAttributes;
 
 @end

@@ -28,7 +28,6 @@
 #import "JSQMessagesCollectionView.h"
 #import "JSQMessagesCollectionViewCell.h"
 
-#import "JSQMessagesCollectionViewLayoutAttributes.h"
 #import "JSQMessagesCollectionViewFlowLayoutInvalidationContext.h"
 #import "JSQMessagesBubblesSizeCalculator.h"
 
@@ -53,8 +52,6 @@ const CGFloat kJSQMessagesCollectionViewAvatarSizeDefault = 30.0f;
 
 - (void)jsq_resetLayout;
 - (void)jsq_resetDynamicAnimator;
-
-- (void)jsq_configureMessageCellLayoutAttributes:(JSQMessagesCollectionViewLayoutAttributes *)layoutAttributes;
 
 - (UIAttachmentBehavior *)jsq_springBehaviorWithLayoutAttributesItem:(UICollectionViewLayoutAttributes *)item;
 - (void)jsq_addNewlyVisibleBehaviorsFromVisibleItems:(NSArray *)visibleItems;
