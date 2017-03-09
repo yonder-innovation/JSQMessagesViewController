@@ -28,13 +28,7 @@
 
 @interface JSQMessagesBubblesSizeCalculator ()
 
-@property (strong, nonatomic, readonly) NSCache *cache;
-
-@property (assign, nonatomic, readonly) NSUInteger minimumBubbleWidth;
-
 @property (assign, nonatomic, readonly) BOOL usesFixedWidthBubbles;
-
-@property (assign, nonatomic, readonly) NSInteger additionalInset;
 
 @property (assign, nonatomic) CGFloat layoutWidthForFixedWidthBubbles;
 

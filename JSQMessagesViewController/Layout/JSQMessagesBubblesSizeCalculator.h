@@ -26,6 +26,12 @@
  */
 @interface JSQMessagesBubblesSizeCalculator : NSObject <JSQMessagesBubbleSizeCalculating>
 
+@property (strong, nonatomic, readonly) NSCache *cache;
+
+@property (assign, nonatomic, readonly) NSInteger additionalInset;
+
+@property (assign, nonatomic, readonly) NSUInteger minimumBubbleWidth;
+
 /**
  *  Initializes and returns a bubble size calculator with the given cache and minimumBubbleWidth.
  *
@@ -39,5 +45,10 @@
 - (instancetype)initWithCache:(NSCache *)cache
            minimumBubbleWidth:(NSUInteger)minimumBubbleWidth
         usesFixedWidthBubbles:(BOOL)usesFixedWidthBubbles NS_DESIGNATED_INITIALIZER;
+
+// Protected methods
+
+- (CGSize)jsq_avatarSizeForMessageData:(id<JSQMessageData>)messageData
+                            withLayout:(JSQMessagesCollectionViewFlowLayout *)layout;
 
 @end
