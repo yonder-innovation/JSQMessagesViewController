@@ -172,6 +172,13 @@
  */
 @property (assign, nonatomic) CGFloat topContentAdditionalInset;
 
+// Protected methods
+
+- (void)handleKVOTextView:(UITextView *)textView contentSizeChange:(NSDictionary *)change;
+- (void)adjustTextViewHeight:(UITextView *)textView byDelta:(CGFloat)dy;
+- (void)jsq_updateKeyboardTriggerPoint;
+- (void)handleKeyboardFrameChangeForTextView:(UITextView *)textView keyboardFrame:(CGRect)keyboardFrame;
+
 #pragma mark - Class methods
 
 /**
