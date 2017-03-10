@@ -277,7 +277,9 @@ JSQMessagesKeyboardControllerDelegate>
     NSParameterAssert(self.senderDisplayName != nil);
 
     [super viewWillAppear:animated];
-    self.toolbarHeightConstraint.constant = self.inputToolbar.preferredDefaultHeight;
+    if (!self.inputToolbar.contentView.textView.hasText) {
+        self.toolbarHeightConstraint.constant = self.inputToolbar.preferredDefaultHeight;
+    }
     [self.view layoutIfNeeded];
     [self.collectionView.collectionViewLayout invalidateLayout];
 
