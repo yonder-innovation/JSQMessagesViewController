@@ -118,27 +118,27 @@
     }
 }
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-
-    // calculate size needed for the text to be visible without scrolling
-    CGSize sizeThatFits = [self sizeThatFits:self.frame.size];
-    float newHeight = sizeThatFits.height;
-
-    // if there is any minimal height constraint set, make sure we consider that
-    if (self.maxHeightConstraint) {
-        newHeight = MIN(newHeight, self.maxHeightConstraint.constant);
-    }
-
-    // if there is any maximal height constraint set, make sure we consider that
-    if (self.minHeightConstraint) {
-        newHeight = MAX(newHeight, self.minHeightConstraint.constant);
-    }
-
-    // update the height constraint
-    self.heightConstraint.constant = newHeight;
-}
+//- (void)layoutSubviews
+//{
+//    [super layoutSubviews];
+//
+//    // calculate size needed for the text to be visible without scrolling
+//    CGSize sizeThatFits = [self sizeThatFits:self.frame.size];
+//    float newHeight = sizeThatFits.height;
+//
+//    // if there is any minimal height constraint set, make sure we consider that
+//    if (self.maxHeightConstraint) {
+//        newHeight = MIN(newHeight, self.maxHeightConstraint.constant);
+//    }
+//
+//    // if there is any maximal height constraint set, make sure we consider that
+//    if (self.minHeightConstraint) {
+//        newHeight = MAX(newHeight, self.minHeightConstraint.constant);
+//    }
+//
+//    // update the height constraint
+//    self.heightConstraint.constant = newHeight;
+//}
 
 #pragma mark - Composer text view
 
