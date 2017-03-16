@@ -17,6 +17,13 @@
 //
 
 #import "DemoMessagesViewController.h"
+#import "JSQMessagesViewAccessoryButtonDelegate.h"
+
+@interface DemoMessagesViewController () <JSQMessagesViewAccessoryButtonDelegate>
+
+@property (strong, nonatomic) NSMutableArray<JSQMessage *> *selectedMessages;
+
+@end
 
 @implementation DemoMessagesViewController
 
@@ -36,13 +43,7 @@
     [super viewDidLoad];
     
     self.title = @"JSQMessages";
-    
-    /**
-     *  You MUST set your senderId and display name
-     */
-    self.senderId = kJSQDemoAvatarIdSquires;
-    self.senderDisplayName = kJSQDemoAvatarDisplayNameSquires;
-    
+
     self.inputToolbar.contentView.textView.pasteDelegate = self;
     
     /**
@@ -50,7 +51,12 @@
      */
     self.demoData = [[DemoModelData alloc] init];
     
-    
+
+    /**
+     *  Set up message accessory button delegate and configuration
+     */
+    self.collectionView.accessoryDelegate = self;
+
     /**
      *  You can set custom avatar sizes
      */
@@ -64,10 +70,16 @@
     
     self.showLoadEarlierMessagesHeader = YES;
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage jsq_defaultTypingIndicatorImage]
-                                                                              style:UIBarButtonItemStyleBordered
+    UIBarButtonItem *receiveItem = [[UIBarButtonItem alloc] initWithImage:[UIImage jsq_defaultTypingIndicatorImage]
+                                                                             style:UIBarButtonItemStylePlain
                                                                              target:self
                                                                              action:@selector(receiveMessagePressed:)];
+
+    UIBarButtonItem *editItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
+                                                                              target:self
+                                                                              action:@selector(toggleEditingMode:)];
+
+    self.navigationItem.rightBarButtonItems = @[editItem, receiveItem];
 
     /**
      *  Register custom menu actions for cells.
@@ -128,6 +140,8 @@
      */
     UIMenuController *menu = [notification object];
     menu.menuItems = @[ [[UIMenuItem alloc] initWithTitle:@"Custom Action" action:@selector(customAction:)] ];
+    
+    [super didReceiveMenuWillShowNotification:notification];
 }
 
 
@@ -178,7 +192,7 @@
     /**
      *  Allow typing indicator to show
      */
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
         NSMutableArray *userIds = [[self.demoData.users allKeys] mutableCopy];
         [userIds removeObject:self.senderId];
@@ -268,7 +282,9 @@
          *  2. Add new id<JSQMessageData> object to your data source
          *  3. Call `finishReceivingMessage`
          */
-        [JSQSystemSoundPlayer jsq_playMessageReceivedSound];
+
+        // [JSQSystemSoundPlayer jsq_playMessageReceivedSound];
+
         [self.demoData.messages addObject:newMessage];
         [self finishReceivingMessageAnimated:YES];
         
@@ -320,6 +336,11 @@
 }
 
 
+-(void) toggleEditingMode:(UIBarButtonItem *)sender
+{
+    self.editing = !self.editing;
+}
+
 
 
 #pragma mark - JSQMessagesViewController method overrides
@@ -337,7 +358,8 @@
      *  2. Add new id<JSQMessageData> object to your data source
      *  3. Call `finishSendingMessage`
      */
-    [JSQSystemSoundPlayer jsq_playMessageSentSound];
+
+    // [JSQSystemSoundPlayer jsq_playMessageSentSound];
     
     JSQMessage *message = [[JSQMessage alloc] initWithSenderId:senderId
                                              senderDisplayName:senderDisplayName
@@ -357,7 +379,7 @@
                                                        delegate:self
                                               cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
                                          destructiveButtonTitle:nil
-                                              otherButtonTitles:NSLocalizedString(@"Send photo", nil), NSLocalizedString(@"Send location", nil), NSLocalizedString(@"Send video", nil), NSLocalizedString(@"Send audio", nil), nil];
+                                              otherButtonTitles:NSLocalizedString(@"Send photo", nil), NSLocalizedString(@"Send location", nil), NSLocalizedString(@"Send video", nil), NSLocalizedString(@"Send video thumbnail", nil), NSLocalizedString(@"Send audio", nil), nil];
     
     [sheet showFromToolbar:self.inputToolbar];
 }
@@ -389,11 +411,15 @@
             break;
             
         case 3:
+            [self.demoData addVideoMediaMessageWithThumbnail];
+            break;
+            
+        case 4:
             [self.demoData addAudioMediaMessage];
             break;
     }
     
-    [JSQSystemSoundPlayer jsq_playMessageSentSound];
+    // [JSQSystemSoundPlayer jsq_playMessageSentSound];
     
     [self finishSendingMessageAnimated:YES];
 }
@@ -401,6 +427,14 @@
 
 
 #pragma mark - JSQMessages CollectionView DataSource
+
+- (NSString *)senderId {
+    return kJSQDemoAvatarIdSquires;
+}
+
+- (NSString *)senderDisplayName {
+    return kJSQDemoAvatarDisplayNameSquires;
+}
 
 - (id<JSQMessageData>)collectionView:(JSQMessagesCollectionView *)collectionView messageDataForItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -556,10 +590,16 @@
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
+
+    cell.accessoryButton.hidden = ![self shouldShowAccessoryButtonForMessage:msg];
     
     return cell;
 }
 
+- (BOOL)shouldShowAccessoryButtonForMessage:(id<JSQMessageData>)message
+{
+    return ([message isMediaMessage] && [NSUserDefaults accessoryButtonForMediaMessages]);
+}
 
 
 #pragma mark - UICollectionView Delegate
@@ -673,8 +713,42 @@
     NSLog(@"Tapped cell at %@!", NSStringFromCGPoint(touchLocation));
 }
 
-#pragma mark - JSQMessagesComposerTextViewPasteDelegate methods
+#pragma mark - Bulk edit
 
+- (BOOL)isEditableItemSelectedAtIndexPath:(NSIndexPath *)indexPath
+{
+    JSQMessage *msg = [self.demoData.messages objectAtIndex:indexPath.item];
+
+    return [self.selectedMessages containsObject:msg];
+}
+
+- (BOOL)collectionView:(JSQMessagesCollectionView *)collectionView
+                layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout
+shouldEditItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+
+- (void)collectionView:(JSQMessagesCollectionView *)collectionView
+editingOverlayAtIndexPath:(NSIndexPath *)indexPath
+        becomeSelected:(BOOL)selected
+{
+    JSQMessage *msg = [self.demoData.messages objectAtIndex:indexPath.item];
+    BOOL alreadySelected = [self.selectedMessages containsObject:msg];
+
+    if (selected && !alreadySelected) {
+        [self.selectedMessages addObject:msg];
+    } else if (!selected && alreadySelected) {
+        [self.selectedMessages removeObject:msg];
+    }
+}
+
+- (void)finishedEditing
+{
+    NSLog(@"finished editing");
+}
+
+#pragma mark - JSQMessagesComposerTextViewPasteDelegate methods
 
 - (BOOL)composerTextView:(JSQMessagesComposerTextView *)textView shouldPasteWithSender:(id)sender
 {
@@ -690,6 +764,13 @@
         return NO;
     }
     return YES;
+}
+
+#pragma mark - JSQMessagesViewAccessoryDelegate methods
+
+- (void)messageView:(JSQMessagesCollectionView *)view didTapAccessoryButtonAtIndexPath:(NSIndexPath *)path
+{
+    NSLog(@"Tapped accessory button!");
 }
 
 @end

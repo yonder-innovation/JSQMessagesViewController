@@ -18,17 +18,19 @@
 
 #import "JSQMessagesCollectionView.h"
 
-#import "JSQMessagesCollectionViewFlowLayout.h"
+#import "JSQMessagesViewAccessoryButtonDelegate.h"
+
 #import "JSQMessagesCollectionViewCellIncoming.h"
 #import "JSQMessagesCollectionViewCellOutgoing.h"
 
 #import "JSQMessagesTypingIndicatorFooterView.h"
 #import "JSQMessagesLoadEarlierHeaderView.h"
+#import "JSQMessagesEditCollectionOverlayView.h"
 
 #import "UIColor+JSQMessages.h"
 
 
-@interface JSQMessagesCollectionView () <JSQMessagesLoadEarlierHeaderViewDelegate>
+@interface JSQMessagesCollectionView () <JSQMessagesLoadEarlierHeaderViewDelegate, JSQMessagesEditCollectionOverlayViewDelegate>
 
 - (void)jsq_configureCollectionView;
 
@@ -72,6 +74,10 @@ forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
 forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
   withReuseIdentifier:[JSQMessagesLoadEarlierHeaderView headerReuseIdentifier]];
 
+    [self registerNib:[JSQMessagesEditCollectionOverlayView nib]
+forSupplementaryViewOfKind:kJSQCollectionElementKindEditOverlay
+  withReuseIdentifier:[JSQMessagesEditCollectionOverlayView editingReuseIdentifier]];
+
     _typingIndicatorDisplaysOnLeft = YES;
     _typingIndicatorMessageBubbleColor = [UIColor jsq_messageBubbleLightGrayColor];
     _typingIndicatorEllipsisColor = [_typingIndicatorMessageBubbleColor jsq_colorByDarkeningColorWithValue:0.3f];
@@ -94,6 +100,18 @@ forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
     [self jsq_configureCollectionView];
 }
 
+#pragma mark - editing overlay view
+- (JSQMessagesEditCollectionOverlayView *)dequeueEditingOverlayViewForIndexPath:(NSIndexPath *)indexPath
+{
+    JSQMessagesEditCollectionOverlayView *editingView = [super dequeueReusableSupplementaryViewOfKind:kJSQCollectionElementKindEditOverlay
+                                                                                  withReuseIdentifier:[JSQMessagesEditCollectionOverlayView editingReuseIdentifier]
+                                                                                         forIndexPath:indexPath];
+    editingView.delegate = self;
+    editingView.indexPath = indexPath;
+
+    return editingView;
+}
+
 #pragma mark - Typing indicator
 
 - (JSQMessagesTypingIndicatorFooterView *)dequeueTypingIndicatorFooterViewForIndexPath:(NSIndexPath *)indexPath
@@ -104,6 +122,7 @@ forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
 
     [footerView configureWithEllipsisColor:self.typingIndicatorEllipsisColor
                         messageBubbleColor:self.typingIndicatorMessageBubbleColor
+                                  animated:YES
                        shouldDisplayOnLeft:self.typingIndicatorDisplaysOnLeft
                          forCollectionView:self];
 
@@ -181,5 +200,68 @@ forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                forItemAtIndexPath:indexPath
                        withSender:sender];
 }
+
+- (void)messagesCollectionViewCellDidTapAccessoryButton:(JSQMessagesCollectionViewCell *)cell
+{
+    NSIndexPath *indexPath = [self indexPathForCell:cell];
+    if (indexPath == nil) {
+        return;
+    }
+
+    [self.accessoryDelegate messageView:self didTapAccessoryButtonAtIndexPath:indexPath];
+}
+
+#pragma mark - Editing overlay view delegate
+
+- (void)editOverlayView:(JSQMessagesEditCollectionOverlayView *)overlayView activated:(BOOL)activated
+{
+    NSIndexPath *indexPath = overlayView.indexPath;
+    if (indexPath == nil) {
+        return;
+    }
+
+    [self.delegate collectionView:self editingOverlayAtIndexPath:indexPath becomeSelected:activated];
+}
+
+- (void)layoutWillDeleteItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath == nil) {
+        return;
+    }
+
+    [self.delegate collectionView:self editingOverlayAtIndexPath:indexPath becomeSelected:NO];
+}
+
+- (void)layoutWillMoveItemAtIndexPath:(NSIndexPath *)indexPath toIndexPath:(NSIndexPath *)newIndexPath
+{
+    if (indexPath == nil || newIndexPath == nil) {
+        return;
+    }
+
+    //this won't cover 100% of cases (like when user rearranging selected items)
+    [self.delegate collectionView:self editingOverlayAtIndexPath:indexPath becomeSelected:NO];
+    [self.delegate collectionView:self editingOverlayAtIndexPath:newIndexPath becomeSelected:YES];
+}
+
+- (UIImage *)editingActiveImage
+{
+    return [self.delegate editingActiveImage];
+}
+
+- (UIImage *)editingInactiveImage
+{
+    return [self.delegate editingInactiveImage];
+}
+
+- (UIColor *)editingActiveColor
+{
+    return [self.delegate editingActiveColor];
+}
+
+- (UIColor *)editingInactiveColor
+{
+    return [self.delegate editingInactiveColor];
+}
+
 
 @end

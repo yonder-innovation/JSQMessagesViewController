@@ -18,6 +18,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  *  A `JSQMessagesCollectionViewLayoutAttributes` is an object that manages the layout-related attributes
  *  for a given `JSQMessagesCollectionViewCell` in a `JSQMessagesCollectionView`.
@@ -37,6 +39,14 @@
  *  @see JSQMessagesCollectionViewCell.
  */
 @property (assign, nonatomic) CGFloat messageBubbleContainerViewWidth;
+
+/**
+ *  The height of the `messageBubbleContainerView` of a `JSQMessagesCollectionViewCell`.
+ *  This value should be greater than `0.0`.
+ *
+ *  @see JSQMessagesCollectionViewCell.
+ */
+@property (assign, nonatomic) CGFloat messageBubbleContainerViewHeight;
 
 /**
  *  The inset of the text container's layout area within the text view's content area in a `JSQMessagesCollectionViewCell`. 
@@ -103,4 +113,7 @@
  */
 @property (assign, nonatomic) CGFloat cellBottomLabelHeight;
 
+
 @end
+
+NS_ASSUME_NONNULL_END

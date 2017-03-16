@@ -4,9 +4,13 @@
 
 ------------------------
 
-## Announcement
+## :warning: Announcement :warning:
 
 Development on version `8.0` of the library is underway. Learn more at [#1216](https://github.com/jessesquires/JSQMessagesViewController/issues/1216) and [#1336](https://github.com/jessesquires/JSQMessagesViewController/issues/1336).
+
+Submit work for `v8.0` to the [`develop`](https://github.com/jessesquires/JSQMessagesViewController/tree/develop) branch.
+
+Submit fixes for `v7.3.x` to the [`release_7.3`](https://github.com/jessesquires/JSQMessagesViewController/tree/release_7.3) branch.
 
 ------------------------
 
@@ -22,7 +26,7 @@ See the [website](http://www.jessesquires.com/JSQMessagesViewController/) for th
 
 ## Design Goals
 
-- Closely mimic the [iOS Messages](http://www.apple.com/ios/messages/) style and behavior
+- Closely mimic [iMessage](http://www.apple.com/ios/messages/) style and behavior
 - [SOLID](https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)) design
 - Easy customization and extension for clients
 
@@ -45,9 +49,6 @@ pod 'JSQMessagesViewController'
 
 # Latest on develop
 pod 'JSQMessagesViewController', :git => 'https://github.com/jessesquires/JSQMessagesViewController.git', :branch => 'develop'
-
-# For version 5.3.2
-pod 'JSQMessagesViewController', :git => 'https://github.com/jessesquires/JSQMessagesViewController', :branch => 'version_5.3.2_patch'
 ````
 
 ## Getting Started
@@ -73,16 +74,13 @@ Read the docs, [available here][docsLink] via [@CocoaDocs](https://twitter.com/C
 - Harlan Haskans ([**@harlanhaskins**](https://github.com/harlanhaskins))
 - Eli Burke ([**@eliburke**](https://github.com/eliburke))
 - Sebastian Ludwig ([**@sebastianludwig**](https://github.com/sebastianludwig))
+- Lucas Huang ([**@Lucashuang0802**](https://github.com/Lucashuang0802))
 
 ## Contributing
 
 Please follow these sweet [contribution guidelines](https://github.com/jessesquires/JSQMessagesViewController/blob/develop/.github/CONTRIBUTING.md).
 
 > **Interested in becoming a core contributor with push access? See our [onboarding guide](https://github.com/jessesquires/JSQMessagesViewController/blob/develop/Documentation/contributor_onboarding.md) for details.**
-
-## Donate
-
-Support the development of this **free** library! **[Donate](https://cash.me/$jsq)** via [Square Cash](https://cash.me/).
 
 ## Credits
 

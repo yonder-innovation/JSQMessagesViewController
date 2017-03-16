@@ -22,6 +22,8 @@
 #import "JSQMessagesCollectionViewFlowLayout.h"
 #import "JSQMessagesInputToolbar.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  *  The `JSQMessagesViewController` class is an abstract class that represents a view controller whose content consists of
  *  a `JSQMessagesCollectionView` and `JSQMessagesInputToolbar` and is specialized to display a messaging interface.
@@ -30,35 +32,20 @@
  */
 @interface JSQMessagesViewController : UIViewController <JSQMessagesCollectionViewDataSource,
                                                          JSQMessagesCollectionViewDelegateFlowLayout,
+                                                         JSQMessagesEditButtonDelegate,
                                                          UITextViewDelegate>
 
 /**
  *  Returns the collection view object managed by this view controller.
  *  This view controller is the collection view's data source and delegate.
  */
-@property (weak, nonatomic, readonly) JSQMessagesCollectionView *collectionView;
+@property (weak, nonatomic, readonly, nullable) JSQMessagesCollectionView *collectionView;
 
 /**
  *  Returns the input toolbar view object managed by this view controller.
  *  This view controller is the toolbar's delegate.
  */
 @property (strong, nonatomic, readonly) JSQMessagesInputToolbar *inputToolbar;
-
-/**
- *  The display name of the current user who is sending messages.
- *
- *  @discussion This value does not have to be unique. This value must not be `nil`.
- */
-@property (copy, nonatomic) NSString *senderDisplayName;
-
-/**
- *  The string identifier that uniquely identifies the current user sending messages.
- *
- *  @discussion This property is used to determine if a message is incoming or outgoing.
- *  All message data objects returned by `collectionView:messageDataForItemAtIndexPath:` are
- *  checked against this identifier. This value must not be `nil`.
- */
-@property (copy, nonatomic) NSString *senderId;
 
 /**
  *  Specifies whether or not the view controller should automatically scroll to the most recent message
@@ -150,6 +137,19 @@
  */
 @property (assign, nonatomic) BOOL showTypingIndicator;
 
+
+/**
+ *  Turn editing mode on/off
+ *  Switching mode off will clean up 'editingIndexPaths'
+ */
+@property (assign, nonatomic) BOOL editing;
+
+/**
+ *  Selected index paths for editing mode.
+ */
+@property (nonatomic, strong) NSArray<NSIndexPath*> *editingIndexPaths;
+
+
 /**
  *  Specifies whether or not the view controller should show the "load earlier messages" header view.
  *
@@ -160,19 +160,19 @@
 @property (assign, nonatomic) BOOL showLoadEarlierMessagesHeader;
 
 /**
- *  Specifies an additional inset amount to be added to the collectionView's contentInsets.top value.
+ *  Specifies an additional inset amount to be added to the collectionView's `contentInset` and `scrollIndicatorInsets` value.
+ *  Currently, the `.left` and `.right` insets are ignored.
  *
- *  @discussion Use this property to adjust the top content inset to account for a custom subview at the top of your view controller.
+ *  @discussion Use this property to adjust the insets to account for a custom subview in your view controller.
  */
-@property (assign, nonatomic) CGFloat topContentAdditionalInset;
+@property (assign, nonatomic) UIEdgeInsets additionalContentInset;
 
 #pragma mark - Class methods
 
 /**
  *  Returns the `UINib` object initialized for a `JSQMessagesViewController`.
  *
- *  @return The initialized `UINib` object or `nil` if there were errors during initialization
- *  or the nib file could not be located.
+ *  @return The initialized `UINib` object.
  *
  *  @discussion You may override this method to provide a customized nib. If you do,
  *  you should also override `messagesViewController` to return your
@@ -185,7 +185,7 @@
  *
  *  @discussion This is the designated initializer for programmatic instantiation.
  *
- *  @return An initialized `JSQMessagesViewController` object if successful, `nil` otherwise.
+ *  @return An initialized `JSQMessagesViewController` object.
  */
 + (instancetype)messagesViewController;
 
@@ -272,6 +272,11 @@
 - (BOOL)isOutgoingMessage:(id<JSQMessageData>)messageItem;
 
 /**
+ *  Called after 'editing' value is set to False
+ */
+- (void)finishedEditing;
+
+/**
  * Scrolls the collection view so that the cell at the specified indexPath is completely visible above the `inputToolbar`.
  *
  * @param indexPath The indexPath for the cell that will be visible.
@@ -319,3 +324,5 @@
 - (void)didReceiveMenuWillHideNotification:(NSNotification *)notification;
 
 @end
+
+NS_ASSUME_NONNULL_END
