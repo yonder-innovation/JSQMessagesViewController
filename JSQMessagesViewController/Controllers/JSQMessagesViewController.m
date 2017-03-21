@@ -938,14 +938,14 @@ static void JSQInstallWorkaroundForSheetPresentationIssue26295020(void) {
 
 - (void)jsq_updateCollectionViewInsets
 {
-    const CGFloat top = self.additionalContentInset.top;
+    const CGFloat top = self.topLayoutGuide.length + self.additionalContentInset.top;
     const CGFloat bottom = CGRectGetMaxY(self.collectionView.frame) - CGRectGetMinY(self.inputToolbar.frame) + self.additionalContentInset.bottom;
     [self jsq_setCollectionViewInsetsTopValue:top bottomValue:bottom];
 }
 
 - (void)jsq_setCollectionViewInsetsTopValue:(CGFloat)top bottomValue:(CGFloat)bottom
 {
-    UIEdgeInsets insets = UIEdgeInsetsMake(self.topLayoutGuide.length + top, 0.0f, bottom, 0.0f);
+    UIEdgeInsets insets = UIEdgeInsetsMake(top, 0.0f, bottom, 0.0f);
     self.collectionView.contentInset = insets;
     self.collectionView.scrollIndicatorInsets = insets;
 }
@@ -1022,7 +1022,7 @@ static void JSQInstallWorkaroundForSheetPresentationIssue26295020(void) {
                         options:animationCurveOption
                      animations:^{
                          const UIEdgeInsets insets = self.additionalContentInset;
-                         [self jsq_setCollectionViewInsetsTopValue:insets.top
+                         [self jsq_setCollectionViewInsetsTopValue:self.collectionView.contentInset.top
                                                        bottomValue:CGRectGetHeight(keyboardEndFrame) + insets.bottom];
                      }
                      completion:nil];
