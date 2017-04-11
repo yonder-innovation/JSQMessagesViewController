@@ -56,6 +56,7 @@
 #import "JSQAudioMediaViewAttributes.h"
 
 #import "JSQMessageBubbleSizeData.h"
+#import "JSQMessageBubbleSize.h"
 
 //  Protocols
 #import "JSQMessageData.h"
