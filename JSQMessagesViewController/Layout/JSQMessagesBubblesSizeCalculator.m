@@ -24,6 +24,7 @@
 #import "JSQMessageData.h"
 
 #import "UIImage+JSQMessages.h"
+#import "JSQMessageBubbleSize.h"
 
 
 @interface JSQMessagesBubblesSizeCalculator ()
@@ -85,13 +86,13 @@
     [self.cache removeAllObjects];
 }
 
-- (CGSize)messageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
-                              atIndexPath:(NSIndexPath *)indexPath
-                               withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
+- (id<JSQMessageBubbleSizeData>)messageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
+                                                    atIndexPath:(NSIndexPath *)indexPath
+                                                     withLayout:(JSQMessagesCollectionViewFlowLayout *)layout
 {
-    NSValue *cachedSize = [self.cache objectForKey:@([messageData messageHash])];
+    id<JSQMessageBubbleSizeData> cachedSize = [self.cache objectForKey:@([messageData messageHash])];
     if (cachedSize != nil) {
-        return [cachedSize CGSizeValue];
+        return cachedSize;
     }
 
     CGSize finalSize = CGSizeZero;
@@ -130,9 +131,10 @@
         finalSize = CGSizeMake(finalWidth, stringSize.height + verticalInsets);
     }
 
-    [self.cache setObject:[NSValue valueWithCGSize:finalSize] forKey:@([messageData messageHash])];
+    JSQMessageBubbleSize *messageBubbleSize = [[JSQMessageBubbleSize alloc] initWithMessageBubbleSize:finalSize subjectHeight:0];
+    [self.cache setObject:messageBubbleSize forKey:@([messageData messageHash])];
 
-    return finalSize;
+    return messageBubbleSize;
 }
 
 - (CGSize)jsq_avatarSizeForMessageData:(id<JSQMessageData>)messageData

@@ -19,6 +19,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "JSQMessageBubbleSizeData.h"
+
 @class JSQMessagesCollectionViewFlowLayout;
 @protocol JSQMessageData;
 
@@ -44,9 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return A sizes that specifies the required dimensions to display the entire message contents.
  *  Note, this is *not* the entire cell, but only its message bubble.
  */
-- (CGSize)messageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
-                              atIndexPath:(NSIndexPath *)indexPath
-                               withLayout:(JSQMessagesCollectionViewFlowLayout *)layout;
+- (id<JSQMessageBubbleSizeData>)messageBubbleSizeForMessageData:(id<JSQMessageData>)messageData
+                                                    atIndexPath:(NSIndexPath *)indexPath
+                                                     withLayout:(JSQMessagesCollectionViewFlowLayout *)layout;
 
 /**
  *  Notifies the receiver that the layout will be reset. 

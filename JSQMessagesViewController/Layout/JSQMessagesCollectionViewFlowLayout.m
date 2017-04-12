@@ -538,7 +538,7 @@ NSString * const kJSQCollectionUpdateTypeDelete = @"jsq_delete";
 
 #pragma mark - Message cell layout utilities
 
-- (CGSize)messageBubbleSizeForItemAtIndexPath:(NSIndexPath *)indexPath
+- (id<JSQMessageBubbleSizeData>)messageBubbleSizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     id<JSQMessageData> messageItem = [self.collectionView.dataSource collectionView:self.collectionView
                                                       messageDataForItemAtIndexPath:indexPath];
@@ -550,10 +550,10 @@ NSString * const kJSQCollectionUpdateTypeDelete = @"jsq_delete";
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    CGSize messageBubbleSize = [self messageBubbleSizeForItemAtIndexPath:indexPath];
+    id<JSQMessageBubbleSizeData> messageBubbleSize = [self messageBubbleSizeForItemAtIndexPath:indexPath];
     JSQMessagesCollectionViewLayoutAttributes *attributes = (JSQMessagesCollectionViewLayoutAttributes *)[self layoutAttributesForItemAtIndexPath:indexPath];
     
-    CGFloat finalHeight = messageBubbleSize.height;
+    CGFloat finalHeight = messageBubbleSize.messageBubbleSize.height;
     finalHeight += attributes.cellTopLabelHeight;
     finalHeight += attributes.messageBubbleTopLabelHeight;
     finalHeight += attributes.cellBottomLabelHeight;
@@ -565,10 +565,10 @@ NSString * const kJSQCollectionUpdateTypeDelete = @"jsq_delete";
 {
     NSIndexPath *indexPath = layoutAttributes.indexPath;
     
-    CGSize messageBubbleSize = [self messageBubbleSizeForItemAtIndexPath:indexPath];
+    id<JSQMessageBubbleSizeData> messageBubbleSize = [self messageBubbleSizeForItemAtIndexPath:indexPath];
     
-    layoutAttributes.messageBubbleContainerViewWidth = messageBubbleSize.width;
-    layoutAttributes.messageBubbleContainerViewHeight = messageBubbleSize.height;
+    layoutAttributes.messageBubbleContainerViewWidth = messageBubbleSize.messageBubbleSize.width;
+    layoutAttributes.messageBubbleContainerViewHeight = messageBubbleSize.messageBubbleSize.height;
     
     layoutAttributes.textViewFrameInsets = self.messageBubbleTextViewFrameInsets;
     

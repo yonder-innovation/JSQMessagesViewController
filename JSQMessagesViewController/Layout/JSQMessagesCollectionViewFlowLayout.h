@@ -212,7 +212,7 @@ FOUNDATION_EXPORT NSString * const kJSQCollectionElementKindEditOverlay;
  *  The returned size contains the required dimensions to display the entire message contents.
  *  Note, this is *not* the entire cell, but only its message bubble.
  */
-- (CGSize)messageBubbleSizeForItemAtIndexPath:(NSIndexPath *)indexPath;
+- (id<JSQMessageBubbleSizeData>)messageBubbleSizeForItemAtIndexPath:(NSIndexPath *)indexPath;
 
 /**
  *  Computes and returns the size of the item specified by indexPath.
